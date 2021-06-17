@@ -1,2 +1,11 @@
 # ignoring the virtual environment
 cn-reader
+
+# ignoring vscode settings
+.vscode
+
+# ignoring the README.md for now
+README.md
+
+# ignoring files
+files
