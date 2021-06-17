@@ -9,3 +9,6 @@ README.md
 
 # ignoring files
 files
+
+# ignoring pycache
+__pycache__
