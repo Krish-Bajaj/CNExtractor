@@ -1,6 +1,6 @@
 import pdfplumber as PDF
 import re
-
+import os
 
 def getData(pdf):
     # to get a particular page -> pdf.pages[0]
@@ -65,3 +65,11 @@ def getData(pdf):
         data["Price per share"] = "{:.2f}".format(pps) # keeping only 2 decimal places
                 
     return {"data": data, "is_correct_type": is_correct_type}
+
+# returns all the files in the "files" directory
+def getPDF(directory):
+    file_list = []
+    for file in os.listdir(directory):
+        if file.endswith('.pdf'):
+            file_list.append(file)
+    return file_list
