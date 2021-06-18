@@ -26,18 +26,26 @@ def getData(pdf):
         # f = open("persistent.txt", "w")
         # f.write(text_version)
 
-        # code to get name
-        pattern = '^Name(.*)SEBI'  # '()' means we want stuff only between that
+        # # code to get name
+        # pattern = '^Name(.*)SEBI'  # '()' means we want stuff only between that
+        # for line in text_lines:
+        #     if line.startswith("Name"):
+        #         name = re.findall(pattern, line)[0].strip()
+        #         data["Name"] = name
+        #         break
+
+        # code to get settlement date
+        settlement_pattern = 'SETTLEMENT DATE(.*)'
         for line in text_lines:
-            if line.startswith("Name"):
-                name = re.findall(pattern, line)[0].strip()
-                data["Name"] = name
+            if "SETTLEMENT DATE" in line:
+                settlement_date = re.findall(settlement_pattern, line)[0].strip()
+                data["Settlement Date"] = settlement_date
                 break
 
         # regex to get name of the stock
         stock_pattern = '^Equity(.*)-C'
         # regex to get quantity bought or sold
-        quantity_pattern = '(\d+)\s'
+        quantity_pattern = '\s(\d+)'
         # regex to get total amount bought or sold
         amount_pattern = '\((\d+\.\d+)'
         for line in text_lines:
@@ -51,6 +59,9 @@ def getData(pdf):
 
                 amount = re.findall(amount_pattern, line)[0].strip()
                 data["Amount"] = amount
+        
+        # price per share
+        pps = float(data["Amount"])/(int(data["Quantity (Bought)"]) + int(data["Quantity (Sold)"]))
+        data["Price per share"] = "{:.2f}".format(pps) # keeping only 2 decimal places
                 
-
     return {"data": data, "is_correct_type": is_correct_type}
