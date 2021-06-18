@@ -67,7 +67,7 @@ def getData(pdf):
     return {"data": data, "is_correct_type": is_correct_type}
 
 # returns all the files in the "files" directory
-def getPDF(directory):
+def getPDFs(directory):
     file_list = []
     for file in os.listdir(directory):
         if file.endswith('.pdf'):

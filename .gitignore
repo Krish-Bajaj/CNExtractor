@@ -12,3 +12,6 @@ files
 
 # ignoring pycache
 __pycache__
+
+# ignoring the trades sheet
+trades.xlsx
