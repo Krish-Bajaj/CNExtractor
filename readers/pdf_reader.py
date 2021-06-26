@@ -1,6 +1,9 @@
 import pdfplumber as PDF
 from data_extraction import getData, getPDFs
+from fetch_emails import getContractNotes
 import pandas as pd
+
+getContractNotes()
 
 # with 'with' -> .close() doesn't need to be mentioned
 data_list = []
@@ -16,9 +19,9 @@ try:
 except:
     file_list = getPDFs('../files')
     for file in file_list:
-        password = input("PDF is encrypted!\nEnter password: ")
+        # password = input("PDF is encrypted!\nEnter password: ")
         try:
-            with PDF.open('../files/{}'.format(file), password=password) as pdf:
+            with PDF.open('../files/{}'.format(file), password="KRI0106") as pdf:
                 data = getData(pdf)
                 data_list.append(data["data"])
         except:
