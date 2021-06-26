@@ -1,6 +1,9 @@
 import pdfplumber as PDF
 from data_extraction import getData, getPDFs
+from fetch_emails import getContractNotes
 import pandas as pd
+
+getContractNotes()
 
 # with 'with' -> .close() doesn't need to be mentioned
 data_list = []
