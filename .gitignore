@@ -9,9 +9,13 @@ README.md
 
 # ignoring files
 files
+copy
 
 # ignoring pycache
 __pycache__
 
 # ignoring the trades sheet
 trades.xlsx
+
+client_secret.json
+gmail_token.json
