@@ -1,6 +1,7 @@
 import pdfplumber as PDF
 import re
 import os
+import datetime
 
 def getData(pdf):
     # to get a particular page -> pdf.pages[0]
@@ -36,18 +37,38 @@ def getData(pdf):
 
         # code to get settlement date
         settlement_pattern = 'SETTLEMENT DATE(.*)'
+        month_pattern = '[a-zA-Z]+'
+        year_pattern = '\-(\d+)'
         for line in text_lines:
             if "SETTLEMENT DATE" in line:
-                settlement_date = re.findall(settlement_pattern, line)[0].strip()
+                settlement_date = re.findall(settlement_pattern, line)[0].strip().upper()
+
+                # get all the years in the same format (doing this before month to month num
+                # change for easier pattern identification)
+                year = re.findall(year_pattern, settlement_date)[0]
+                if len(year) == 2:
+                    new_year = "20" + year
+                else:
+                    new_year = year
+                settlement_date = settlement_date.replace(year, str(new_year))
+
+                # replacing month with month number
+                month = re.findall(month_pattern, settlement_date)[0]
+                month_num = datetime.datetime.strptime(month, "%b").month
+                settlement_date = settlement_date.replace(month, str(month_num))
+
+                # https://www.geeksforgeeks.org/python-sort-list-of-dates-given-as-strings/
+
                 data["Settlement Date"] = settlement_date
                 break
 
-        # regex to get name of the stock
+        # get name of the stock
         stock_pattern = '^Equity(.*)-C'
-        # regex to get quantity bought or sold
+        # get quantity bought or sold
         quantity_pattern = '\s(\d+)'
-        # regex to get total amount bought or sold
-        amount_pattern = '\((\d+\.\d+)'
+        # get total amount
+        amount_pattern = '\d+\.\d+'
+
         for line in text_lines:
             if line.startswith("Equity"):
                 stock = re.findall(stock_pattern, line)[0].strip()
@@ -57,7 +78,8 @@ def getData(pdf):
                 data["Quantity (Bought)"] = quantity[0]
                 data["Quantity (Sold)"] = quantity[1]
 
-                amount = re.findall(amount_pattern, line)[0].strip()
+                words = line.split()
+                amount = re.findall(amount_pattern, words[len(words) - 1])[0]
                 data["Amount"] = amount
         
         # price per share

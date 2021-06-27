@@ -10,6 +10,7 @@ README.md
 # ignoring files
 files
 copy
+errors
 
 # ignoring pycache
 __pycache__
