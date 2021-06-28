@@ -73,8 +73,6 @@ def getData(pdf, date_list):
                 quantity = re.findall(quantity_pattern, line)
                 if line.index(quantity[0]) < 25: # checks if there is a number within the name of stock
                     quantity.pop(0)
-                data["Quantity (Bought)"] = quantity[0]
-                data["Quantity (Sold)"] = quantity[1]
 
                 if "Cash" in line:    
                     stock = re.findall('^Equity(.*)-C', line)[0].strip()
@@ -85,6 +83,9 @@ def getData(pdf, date_list):
                         # just in case the other 2 don't work - used a dynamic variable here in regex
                         stock = re.findall('^Equity(.*)' + quantity[0], line)[0].strip()
                 data["Stock"] = stock
+
+                data["Quantity (Bought)"] = quantity[0]
+                data["Quantity (Sold)"] = quantity[1]
 
                 words = line.split()
                 amount = re.findall(amount_pattern, words[len(words) - 1])[0]
