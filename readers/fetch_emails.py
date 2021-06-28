@@ -7,10 +7,12 @@ import shutil
 def getContractNotes():
     gmail = Gmail()
 
-    label_name = input("\nEnter your label under which files are stored: ")
+    # label_name = input("\nEnter your label under which files are stored: ")
     query_params = {
         "read": True,
-        "labels":[[label_name]]
+        # "labels":[[label_name]],
+        "after": "2020/02/27",
+        "subject": "Contract Note for Acc No",
     }
 
     messages = gmail.get_messages(query=construct_query(query_params))

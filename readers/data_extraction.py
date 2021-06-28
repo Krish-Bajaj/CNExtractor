@@ -3,7 +3,7 @@ import re
 import os
 import datetime
 
-def getData(pdf):
+def getData(pdf, date_list):
     # to get a particular page -> pdf.pages[0]
     types_of_PDF = ['CONTRACT NOTE', 'Contract Note', 'TAX INVOICE']
     pages = pdf.pages
@@ -50,20 +50,19 @@ def getData(pdf):
                     new_year = "20" + year
                 else:
                     new_year = year
-                settlement_date = settlement_date.replace(year, str(new_year))
+                settlement_date = settlement_date[:1] + settlement_date[1:].replace(year, str(new_year))
+
+                date = settlement_date.replace("-", " ")
+                date_list.append(date)
 
                 # replacing month with month number
-                month = re.findall(month_pattern, settlement_date)[0]
-                month_num = datetime.datetime.strptime(month, "%b").month
-                settlement_date = settlement_date.replace(month, str(month_num))
-
-                # https://www.geeksforgeeks.org/python-sort-list-of-dates-given-as-strings/
+                # month = re.findall(month_pattern, settlement_date)[0]
+                # month_num = datetime.datetime.strptime(month, "%b").month
+                # settlement_date = settlement_date.replace(month, str(month_num))
 
                 data["Settlement Date"] = settlement_date
                 break
 
-        # get name of the stock
-        stock_pattern = '^Equity(.*)-C'
         # get quantity bought or sold
         quantity_pattern = '\s(\d+)'
         # get total amount
@@ -71,12 +70,21 @@ def getData(pdf):
 
         for line in text_lines:
             if line.startswith("Equity"):
-                stock = re.findall(stock_pattern, line)[0].strip()
-                data["Stock"] = stock
-
                 quantity = re.findall(quantity_pattern, line)
+                if line.index(quantity[0]) < 25: # checks if there is a number within the name of stock
+                    quantity.pop(0)
                 data["Quantity (Bought)"] = quantity[0]
                 data["Quantity (Sold)"] = quantity[1]
+
+                if "Cash" in line:    
+                    stock = re.findall('^Equity(.*)-C', line)[0].strip()
+                else:
+                    try:
+                        stock = re.findall('^Equity(.*)-', line)[0].strip()
+                    except:
+                        # just in case the other 2 don't work - used a dynamic variable here in regex
+                        stock = re.findall('^Equity(.*)' + quantity[0], line)[0].strip()
+                data["Stock"] = stock
 
                 words = line.split()
                 amount = re.findall(amount_pattern, words[len(words) - 1])[0]
