@@ -104,3 +104,8 @@ def getPDFs(directory):
         if file.endswith('.pdf'):
             file_list.append(file)
     return file_list
+
+# delete all the files in the "files" directory
+def deletePDFs(directory):
+    for file in os.listdir(directory):
+        os.remove(os.path.join(directory, file))

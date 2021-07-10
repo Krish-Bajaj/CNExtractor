@@ -1,12 +1,13 @@
 import pdfplumber as PDF
-from .data_extraction import getData, getPDFs
+from .data_extraction import getData, getPDFs, deletePDFs
 from .fetch_emails import getContractNotes
 import pandas as pd
+import os
 
 def generateData():
     getContractNotes()
 
-    # with 'with' -> .close() doesn't need to be mentioned
+    # opening a file with 'with' -> .close() doesn't need to be mentioned
     data_list = []
     date_list = []
     try:
@@ -29,4 +30,6 @@ def generateData():
 
     df = pd.DataFrame(data_list)
     # df.to_excel('trades.xlsx')
-    return df
+    # deletePDFs('files')
+    # os.remove('gmail_token.json')
+    return data_list

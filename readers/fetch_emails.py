@@ -21,7 +21,7 @@ def getContractNotes():
             for attm in message.attachments:
                 attm.save()
 
-    # moves pdf files from current directory to emails folder
+    # moves pdf files from current directory to files folder
     for file in os.listdir():
         if file.endswith('.pdf'):
-            shutil.move(file, "../files")
+            shutil.move(file, os.path.join("files", file))
