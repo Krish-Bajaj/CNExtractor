@@ -20,5 +20,5 @@ def generateData(password):
     df = pd.DataFrame(data_list)
     # df.to_excel('trades.xlsx')
     # deletePDFs('files')
-    # os.remove('gmail_token.json')
+
     return data_list

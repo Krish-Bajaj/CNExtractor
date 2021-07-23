@@ -7,6 +7,7 @@ from flask_cors import CORS
 import pdfminer
 from pymongo import MongoClient
 import datetime
+import os
 from readers.pdf_reader import generateData
 import constants
 
@@ -23,26 +24,38 @@ user_id = ''
 
 def sendData(user_id):
     key = { "user_id": user_id }
-    userDocument = {
-        "user_id": user_id,
-    }
-    users.replace_one(key, userDocument, upsert=True)
+    userDocument = { "$set": { "user_id": user_id } }
+    users.update_one(key, userDocument, upsert=True)
     # "upsert" inserts new data if "key" isn't present otherwise updates current data
-
-    # print(users.find_one({ "name.last": "B" })) # accessing data
 
 @app.route('/user', methods=['POST'])
 def get_data():
     user_id = request.get_json()["key"]
-    response = jsonify(user_id)
+    key = { "user_id": user_id }
     sendData(user_id)
-    return 'works' # for any request there has to be some sort of a return statement else it'll throw an error
+    return 'works' # for any post request there has to be some sort of a return statement else it'll throw an error
 
 @app.route('/contracts/all', methods=['GET', 'POST'])
 def api_all():
     if request.method == 'POST':
         try:
-            data_list = generateData(request.get_json()["password"])
+            user_id = request.get_json()["key"]
+            key = { "user_id": user_id }
+            try:
+                if users.find_one(key, { "_id": 0, "token": 1 }) != {}:
+                    token_file = open('gmail_token.json', 'w')
+                    token_file.write(users.find_one(key, { "_id": 0, "token": 1 })["token"])
+                    token_file.close()
+            except KeyError:
+                print("New user!")
+
+            if user_id != '':
+                data_list = generateData(request.get_json()["password"])
+
+            token_file = open('gmail_token.json', 'r')
+            users.update_one(key, { "$set": { "token": token_file.read() } }, upsert=True)
+            token_file.close()
+            os.remove('gmail_token.json')
             response = jsonify(data_list) # very important line - otherwise throws a type error
             return response
         except pdfminer.pdfdocument.PDFPasswordIncorrect as error:
