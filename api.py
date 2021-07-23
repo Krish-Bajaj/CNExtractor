@@ -19,19 +19,24 @@ client = MongoClient(constants.mongo_url)
 db = client.Cluster1 # connects to the cluster
 users = db.users # creates/accesses the users db
 
-def sendData():
-    key = { "key": "1234567" }
+user_id = ''
+
+def sendData(user_id):
+    key = { "user_id": user_id }
     userDocument = {
-        "key": "1234567",
-        "name": { "first": "kk", "last": "BBBB" },
-        "birth": datetime.datetime(2001, 6, 1),
+        "user_id": user_id,
     }
     users.replace_one(key, userDocument, upsert=True)
     # "upsert" inserts new data if "key" isn't present otherwise updates current data
 
     # print(users.find_one({ "name.last": "B" })) # accessing data
 
-# sendData()
+@app.route('/user', methods=['POST'])
+def get_data():
+    user_id = request.get_json()["key"]
+    response = jsonify(user_id)
+    sendData(user_id)
+    return 'works' # for any request there has to be some sort of a return statement else it'll throw an error
 
 @app.route('/contracts/all', methods=['GET', 'POST'])
 def api_all():
