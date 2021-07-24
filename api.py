@@ -21,6 +21,7 @@ db = client.Cluster1 # connects to the cluster
 users = db.users # creates/accesses the users db
 
 user_id = ''
+password = ''
 
 def sendData(user_id):
     key = { "user_id": user_id }
@@ -50,10 +51,19 @@ def api_all():
                 print("New user!")
 
             if user_id != '':
-                data_list = generateData(request.get_json()["password"])
+                if users.find_one(key, { "_id": 0, "password": 1 }) != {}:
+                    password = users.find_one(key, { "_id": 0, "password": 1 })["password"]
+                else:
+                    password = request.get_json()["password"]
+                try:
+                    data_list = generateData(password)
+                except:
+                    users.update_one(key, { "$unset" : { "password": 1 } })
+                    password = request.get_json()["password"]
+                    data_list = generateData(password)
 
             token_file = open('gmail_token.json', 'r')
-            users.update_one(key, { "$set": { "token": token_file.read() } }, upsert=True)
+            users.update_one(key, { "$set": { "token": token_file.read(), "password": password } }, upsert=True)
             token_file.close()
             os.remove('gmail_token.json')
             response = jsonify(data_list) # very important line - otherwise throws a type error
