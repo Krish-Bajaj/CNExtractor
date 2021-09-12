@@ -20,3 +20,4 @@ trades.xlsx
 
 client_secret.json
 gmail_token.json
+constants.py

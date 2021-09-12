@@ -6,6 +6,8 @@ import datetime
 def getData(pdf, date_list):
     # to get a particular page -> pdf.pages[0]
     types_of_PDF = ['CONTRACT NOTE', 'Contract Note', 'TAX INVOICE']
+    data = {}
+    text_lines = []
     pages = pdf.pages
     text_version = ""
     for page in pages:
@@ -20,8 +22,6 @@ def getData(pdf, date_list):
             break
 
     if is_correct_type:
-        data = {}
-        text_lines = []
         for sublist in text_version.split('\n'):
             text_lines.append(sublist)
         # f = open("persistent.txt", "w")
@@ -104,3 +104,8 @@ def getPDFs(directory):
         if file.endswith('.pdf'):
             file_list.append(file)
     return file_list
+
+# delete all the files in the "files" directory
+def deletePDFs(directory):
+    for file in os.listdir(directory):
+        os.remove(os.path.join(directory, file))
